@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SNAPLY — Photobooth</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+  <!-- HEADER -->
+  <div id="header">
+    <div>
+      <div class="logo">SNAPLY●</div>
+      <div class="event-name" id="eventLabel">Photobooth Studio</div>
+    </div>
+    <div id="settingsBtn" title="Settings">⚙</div>
+  </div>
+
+  <!-- CAMERA -->
+  <div id="cameraSection">
+    <div id="cameraWrap">
+      <div id="bgOverlay"></div>
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="canvas" style="display:none"></canvas>
+      <div id="stickersLayer"></div>
+      <div id="frameOverlay"></div>
+      <div id="gridLines">
+        <svg viewBox="0 0 300 400" preserveAspectRatio="none">
+          <line x1="100" y1="0" x2="100" y2="400" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+          <line x1="200" y1="0" x2="200" y2="400" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+          <line x1="0" y1="133" x2="300" y2="133" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+          <line x1="0" y1="266" x2="300" y2="266" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+        </svg>
+      </div>
+      <div id="flashEl"></div>
+      <div id="countdown"><div class="count-num" id="countNum">3</div></div>
+      <div id="modeTag">SINGLE</div>
+      <div id="mirrorTag">🔄 MIRROR</div>
+      <div id="photoStrip" style="display:none"></div>
+      <div id="noCamMsg" style="display:none">
+        <div class="big">📷</div>
+        <div>Kamera tidak terdeteksi</div>
+        <div style="font-size:11px">Izinkan akses kamera di browser</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK CONTROLS -->
+  <div id="quickControls">
+    <button class="qbtn active" id="mirrorBtn"><span class="icon">↔</span> Mirror</button>
+    <button class="qbtn" id="gridBtn"><span class="icon">⊞</span> Grid</button>
+    <button class="qbtn" id="switchCamBtn"><span class="icon">🔃</span> Kamera</button>
+    <button class="qbtn" id="focusModeBtn"><span class="icon">⊙</span> Focus</button>
+  </div>
+
+  <!-- MAIN CONTROLS -->
+  <div id="mainControls">
+    <div class="side-btn-group">
+      <button class="side-btn" id="frameMenuBtn"><span class="icon">🎭</span> Frame</button>
+      <button class="side-btn" id="bgMenuBtn"><span class="icon">🎨</span> BG</button>
+    </div>
+
+    <button id="shutterBtn" title="Ambil Foto"></button>
+
+    <div class="side-btn-group">
+      <button class="side-btn" id="propsMenuBtn"><span class="icon">✨</span> Props</button>
+      <button class="side-btn" id="modeMenuBtn"><span class="icon">📋</span> Mode</button>
+    </div>
+  </div>
+
+  <!-- BOTTOM PANEL -->
+  <div id="bottomPanel">
+    <div class="panel-tabs" id="panelTabs" style="display:none">
+      <button class="tab-btn active" data-tab="frame">🎭 Frame</button>
+      <button class="tab-btn" data-tab="bg">🎨 BG</button>
+      <button class="tab-btn" data-tab="props">✨ Props</button>
+      <button class="tab-btn" data-tab="mode">📋 Mode</button>
+    </div>
+
+    <!-- FRAME PANEL -->
+    <div class="panel-content active" id="tab-frame" style="display:none">
+      <div class="items-scroll" id="frameList"></div>
+    </div>
+
+    <!-- BG PANEL -->
+    <div class="panel-content" id="tab-bg" style="display:none">
+      <div class="items-scroll" id="bgList"></div>
+    </div>
+
+    <!-- PROPS PANEL -->
+    <div class="panel-content" id="tab-props" style="display:none">
+      <div class="items-scroll" id="propsList"></div>
+    </div>
+
+    <!-- MODE PANEL -->
+    <div class="panel-content" id="tab-mode" style="display:none">
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <div style="flex:1">
+          <div style="font-size:10px;color:var(--text-dim);margin-bottom:5px;letter-spacing:1px">MODE</div>
+          <div class="layout-picker">
+            <button class="layout-opt active" data-mode="single">Single</button>
+            <button class="layout-opt" data-mode="multi2">2x Strip</button>
+            <button class="layout-opt" data-mode="multi3">3x Strip</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text-dim);margin-bottom:5px;letter-spacing:1px">TIMER</div>
+        <div class="timer-opts">
+          <button class="timer-dot" data-sec="0">OFF</button>
+          <button class="timer-dot active" data-sec="3">3s</button>
+          <button class="timer-dot" data-sec="5">5s</button>
+          <button class="timer-dot" data-sec="10">10s</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text-dim);margin-bottom:5px;letter-spacing:1px">RASIO</div>
+        <div class="ratio-opts">
+          <button class="ratio-opt" data-ratio="1/1">1:1</button>
+          <button class="ratio-opt active" data-ratio="3/4">3:4</button>
+          <button class="ratio-opt" data-ratio="9/16">9:16</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PREVIEW MODAL -->
+<div id="previewModal">
+  <div style="width:100%;text-align:center;margin-bottom:16px">
+    <span style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--text-dim)">PREVIEW</span>
+  </div>
+  <div id="previewImgWrap">
+    <img id="previewImg" src="" alt="Preview">
+  </div>
+  <div id="previewCollage"></div>
+  <div class="preview-actions">
+    <button class="pact-btn" id="retakeBtn">↩ Retake</button>
+    <button class="pact-btn primary" id="downloadBtn">⬇ Simpan</button>
+  </div>
+</div>
+
+<div id="toast">✓ Tersimpan!</div>
+
+<script src="app.js"></script>
+</body>
+</html>
